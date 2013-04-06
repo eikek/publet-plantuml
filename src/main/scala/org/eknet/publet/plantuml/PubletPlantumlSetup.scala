@@ -62,17 +62,18 @@ class PubletPlantumlSetup @Inject() (publet: Publet, config: Config)  {
     })
     publet.mountManager.mount(plantumlMount, tmpimages)
     Markdown.macros :::= List(
-      MacroDefinition( """(@startuml[:\s]{1,2}.*?@enduml)\s""", "s", createPlantumlImage, true)
+      MacroDefinition( """([\s]{0,4})(@(startuml|startuml:|startuml::)\n.*?@enduml)\n""", "s", createPlantumlImage, true)
     )
   }
 
   def createPlantumlImage(m: Matcher): String = {
-    val body = m.group(1)
+    val body = m.group(2)
+    val prefix = m.group(1)
     if (body.startsWith("@startuml::")) {
-      "<pre>"+body.replaceFirst("@startuml::", "@startuml")+"</pre>"
+      prefix +"<pre>" + body.replaceFirst("@startuml::", "@startuml")+"</pre>"
     }
-    else if (body.startsWith("@startuml:")) {
-      body.replaceFirst("@startuml:", "@startuml")
+    else if (body.startsWith("@startuml:") || isEscapePrefix(prefix)) {
+      prefix + body.replaceFirst("@startuml:", "@startuml")
     }
     else {
       val file = new File(plantUmlDir, createFilename(body))
@@ -89,9 +90,11 @@ class PubletPlantumlSetup @Inject() (publet: Publet, config: Config)  {
       })
 
       val url = PubletWebContext.urlOf(plantumlMount / file.getName)
-      """<img src="%s"/>""".format(url)
+      prefix + """<img src="%s"/>""".format(url)
     }
   }
+
+  private[this] def isEscapePrefix(p: String) = p == "    " || p.startsWith("```")
 
   private[this] def createFilename(uml: String): String = {
     Hashing.sha1().hashString(uml).toString + ".png"

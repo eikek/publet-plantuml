@@ -44,6 +44,9 @@ colon). In this case the source code is rendered as is -- without the colon.
 
 You can wrap it in a `<pre/>` element easily by appending two colons -- `@startuml::`.
 
+It also recognizes markdown code blocks. If indented with four spaces, or with three
+backticks, the source is rendered as is.
+
 ### Configuration
 
 The extension caches the created images in a temporary directory on the server. To avoid
