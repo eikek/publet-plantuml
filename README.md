@@ -19,10 +19,10 @@ apt-get install graphviz
 
 Use plantuml diagrams in your markdown files:
 
-@startuml::
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
-@enduml
+    @startuml
+    Alice -> Bob: Authentication Request
+    Bob --> Alice: Authentication Response
+    @enduml
 
 results in
 
