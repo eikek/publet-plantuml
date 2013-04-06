@@ -1,21 +1,57 @@
-# extension template 
+## PlantUML Extension
 
-This is an extension template for [publet](https://eknet.org/main/projects/publet/index.html). It
-contains necessary build files for sbt and a silly example.
+This extension for [publet](https://eknet.org/main/projects/publet/) adds
+a [plantuml](http://plantuml.sourceforge.net/) macro to markdown. It translates
+your plantuml diagrams to images.
 
-Clone this project
+### Prerequisites
 
-    git clone https://eknet.org/git/publet-extension-template.git
+PlantUML uses [Graphviz](http://www.graphviz.org/) for rendering some diagrams. Please see
+plantuml's documentation site [here](http://plantuml.sourceforge.net/graphvizdot.html).
 
-and then execute the `install.scala` script
+You should install graphviz on your system. For example, with Debian:
 
-    scala src/install.scala
+<pre>
+apt-get install graphviz
+</pre>
 
-This will ask for a `groupId` and `projectId` and then renames and filters
-the files. After that, just remove the `intall.scala` script (and the `.git/`
-directory) and start  [sbt](https://github.com/harrah/xsbt). The script needs 
-Java 7 to run.
+### Usage
 
-The [publet-sbt-plugin](https://eknet.org/gitr/?r=publet-sbt-plugin.git) is 
-configured and you can start publet with the new extension using `publet:start`
-sbt task.
+Use plantuml diagrams in your markdown files:
+
+@startuml::
+Alice -> Bob: Authentication Request
+Bob --> Alice: Authentication Response
+@enduml
+
+results in
+
+<p>
+<img src="http://plantuml.sourceforge.net/imgp/index.png"/>
+</p>
+
+Everything between the known `@startuml` / `@enduml` is handed to plantuml. The image is
+stored in the local filesystem and the code is replaced by the corresponding html image tag.
+
+The image files are reused and recreated only, if the source changes.
+
+### Escaping
+
+To escape from generating images from plantuml sources, use `@startuml:` (just append a
+colon). In this case the source code is rendered as is -- without the colon.
+
+You can wrap it in a `<pre/>` element easily by appending two colons -- `@startuml::`.
+
+### Configuration
+
+The extension caches the created images in a temporary directory on the server. To avoid
+endless growth, it is restricted by default to a maximum size of 50 MiB. You can change
+this limit in the [publet.properties](../../configuration.html#Configuration_File) configuration
+file:
+
+    plantuml.maxDiskSize=200MiB
+
+The disk size can be specified as a plain number, in which case the unit Byte is assumed. Otherwise,
+one of the following units can be used: `Bytes`, `KiB`, `MiB`, and `GiB`.
+
+If the size limit is reached, files are removed automatically.

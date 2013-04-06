@@ -1,7 +1,7 @@
 ## PlantUML Extension
 
-This extension adds a [plantuml](http://plantuml.sourceforge.net/) macro for markdown. It translates your plantuml
-diagrams to images.
+This extension adds a [plantuml](http://plantuml.sourceforge.net/) macro to markdown.
+It translates your plantuml diagrams to images.
 
 ### Prerequisites
 
