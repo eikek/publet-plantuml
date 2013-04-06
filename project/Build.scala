@@ -1,6 +1,10 @@
+import _root_.sbtassembly.Plugin.AssemblyKeys
+import _root_.sbtassembly.Plugin.AssemblyKeys._
 import sbt._
 import Keys._
 import Dependencies._
+import sbtassembly.Plugin._
+import AssemblyKeys._
 
 object Resolvers {
   val eknet = "eknet.org" at "https://eknet.org/maven2"
@@ -51,11 +55,22 @@ object RootBuild extends Build {
     )
   ) dependsOn (root)
 
-  val buildSettings = Project.defaultSettings ++ ReflectPlugin.allSettings ++ Seq(
+  val exludedFiles = Set(
+    "javax.servlet-3.0.0.v201112011016.jar"
+  )
+  def isExcluded(n: String) = exludedFiles contains (n)
+
+  val deps = Seq(publetWeb, publetAppPlugin, servletApiProvided, plantuml)
+
+  val buildSettings = Project.defaultSettings ++ assemblySettings ++ ReflectPlugin.allSettings ++ Seq(
     name := "publet-plantuml",
     ReflectPlugin.reflectPackage := "org.eknet.publet.plantuml",
     sourceGenerators in Compile <+= ReflectPlugin.reflect,
-    libraryDependencies ++= deps
+    libraryDependencies ++= deps,
+    assembleArtifact in packageScala := false,
+    excludedJars in assembly <<= (fullClasspath in assembly) map { cp =>
+      cp filter { f => isExcluded(f.data.getName) }
+    }
   ) ++ PubletPlugin.publetSettings
 
   override lazy val settings = super.settings ++ Seq(
@@ -74,7 +89,6 @@ object RootBuild extends Build {
     </dependency>
   )
 
-  val deps = Seq(publetWeb, publetAppPlugin, servletApiProvided, plantuml)
 }
 
 
