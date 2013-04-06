@@ -46,8 +46,7 @@ You can wrap it in a `<pre/>` element easily by appending two colons -- `@startu
 
 The extension caches the created images in a temporary directory on the server. To avoid
 endless growth, it is restricted by default to a maximum size of 50 MiB. You can change
-this limit in the [publet.properties](../../configuration.html#Configuration_File) configuration
-file:
+this limit in the `publet.properties` configuration file:
 
     plantuml.maxDiskSize=200MiB
 
